@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+    <h1>Dashboard</h1>
+
+    <p>
+        Logged in as {{ request.user.username }}
+        |
+        <a href="{% url 'logout' %}">Logout</a>
+    </p>
+
+    <h2>Filters</h2>
+    <form method="get">
+        <label>
+            Status:
+            <select name="status">
+                <option value="">All</option>
+                <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+                <option value="done" {% if status == "done" %}selected{% endif %}>Done</option>
+            </select>
+        </label>
+
+        <label>
+            Due from:
+            <input type="date" name="start_date" value="{{ start_date }}">
+        </label>
+
+        <label>
+            Due to:
+            <input type="date" name="end_date" value="{{ end_date }}">
+        </label>
+
+        <button type="submit">Apply</button>
+    </form>
+
+    <p>
+        <a href="{% url 'create_followup' %}">Create New Follow-up</a>
+    </p>
+
+    <hr>
+
+    <h2>Summary</h2>
+    <ul>
+        <li>Total: {{ total_count }}</li>
+        <li>Pending: {{ pending_count }}</li>
+        <li>Done: {{ done_count }}</li>
+    </ul>
+
+    <h2>Follow-ups</h2>
+
+    {% if followups %}
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>Patient</th>
+                <th>Phone</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Language</th>
+                <th>Views</th>
+                <th>Public Link</th>
+                <th>Actions</th>
+            </tr>
+
+            {% for f in followups %}
+            <tr>
+                <td>{{ f.patient_name }}</td>
+                <td>{{ f.phone }}</td>
+                <td>{{ f.due_date }}</td>
+                <td>{{ f.status }}</td>
+                <td>{{ f.language }}</td>
+                <td>{{ f.view_count }}</td>
+                <td>
+                    <a href="{% url 'public_followup' f.public_token %}" target="_blank">
+                        View
+                    </a>
+
+                </td>
+                <td>
+                    <a href="{% url 'edit_followup' f.id %}">Edit</a>
+
+                    {% if f.status == "pending" %}
+                        <form method="post"
+                              action="{% url 'mark_done' f.id %}"
+                              style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Mark Done</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No follow-ups found.</p>
+    {% endif %}
+</body>
+</html>

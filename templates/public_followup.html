@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Follow-up</title>
+</head>
+<body>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+    <h2>Follow-up Information</h2>
+
+    <p>{{ message }}</p>
+
+    <p>
+        <strong>Patient:</strong> {{ followup.patient_name }} <br>
+        <strong>Due Date:</strong> {{ followup.due_date }}
+    </p>
+
+    {% if followup.notes %}
+        <hr>
+        <p>
+            <strong>Notes:</strong><br>
+            {{ followup.notes }}
+        </p>
+    {% endif %}
+</body>
+</html>
